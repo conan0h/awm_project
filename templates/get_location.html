@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Wiki Locator</title>
+</head>
+<body>
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css">
+    <script src="/static/js/locator.js"></script>
+
+
+    <div id="container">
+        <h1>Wiki Locator</h1>
+
+        <form method="post" action="{% url 'get_nearby_wikipedia' %}">
+          {% csrf_token %}
+          <input type="hidden" id="latitude" name="latitude" value="">
+          <input type="hidden" id="longitude" name="longitude" value="">
+          <button type="button" onclick="getLocation()">Get Nearby Wikipedia Pages</button>
+        </form>
+    </div>
+</body>
+</html>

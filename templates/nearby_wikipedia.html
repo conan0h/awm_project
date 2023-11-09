@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <link
+        rel="stylesheet"
+        href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+        integrity="sha384-pzjw8f+ua7Kw1TIq0v8FqFjcJ6pajs/rfdfs3SO+k3R5l5F5mq57F5V3J7D5u"
+        crossorigin="anonymous"
+    >
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+     integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY="
+     crossorigin=""/>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+     integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+     crossorigin=""></script>
+    <link rel="stylesheet" type="text/css" href="/static/css/style.css">
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <a class="nav-link" href="{% url 'get_nearby_wikipedia' %}">Get Nearby Wikipedia Pages</a>
+    </nav>
+
+    <div id="map" style="width: 100%; height: 400px;"></div>
+
+    <script>
+    var userLatitude = {{ latitude }};
+    var userLongitude = {{ longitude }};
+    console.log('User Latitude: ' + userLatitude);
+    console.log('User Longitude: ' + userLongitude);
+    var map = L.map('map').setView([userLatitude, userLongitude], 13);
+
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(map);
+
+    // Add a marker for the user's location
+    var userMarker = L.marker([userLatitude, userLongitude]).addTo(map);
+    userMarker.bindPopup('Your Location').openPopup();
+
+    {% for result in results %}
+        {% if result.latitude and result.longitude %}
+            var popup{{ forloop.counter }} = L.popup()
+                .setLatLng([{{ result.latitude }}, {{ result.longitude }}])
+                .setContent('<a href="https://en.wikipedia.org/wiki/{{ result.title|urlencode }}">{{ result.title }}</a><br>Distance: {{ result.distance|floatformat:2 }} km');
+
+            L.marker([{{ result.latitude }}, {{ result.longitude }}]).addTo(map).bindPopup(popup{{ forloop.counter }});
+        {% endif %}
+    {% endfor %}
+</script>
+
+
+
+
+
+
+    <div class="container mt-4">
+        <h1>Nearby Wikipedia Articles</h1>
+        <ul class="article-list">
+            {% if results %}
+                {% for result in results %}
+                    <li class="article-list-item">
+                        <a href="https://en.wikipedia.org/wiki/{{ result.title|urlencode }}">
+                            <img src="{% if result.thumbnail %}{{ result.thumbnail }}{% else %}https://t4.ftcdn.net/jpg/04/73/25/49/360_F_473254957_bxG9yf4ly7OBO5I0O5KABlN930GwaMQz.jpg{% endif %}" alt="Thumbnail" class="img-thumbnail">
+                            {{ result.title }}
+                        </a>
+
+                        <!-- Display the calculated distance -->
+                        <span class="text-muted">
+                            {% with result.distance as dist %}
+                                Distance: {{ dist|floatformat:2 }} km
+                            {% endwith %}
+                        </span>
+
+                    </li>
+                {% endfor %}
+            {% else %}
+                <p>No nearby Wikipedia pages found.</p>
+            {% endif %}
+        </ul>
+    </div>
+
+    <!-- Add Bootstrap JavaScript and jQuery from CDN -->
+    <script
+        src="https://code.jquery.com/jquery-3.5.1.slim.min.js"
+        integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+        crossorigin="anonymous"
+    ></script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.min.js"
+        integrity="sha384-d7I6W0Nz5lXw5j5qO1CAw6pU1Dc6MEeGkRfi5CY4F1vhv8q5xj9HONa2F1z2O6a2r"
+        crossorigin="anonymous"
+    ></script>
+</body>
+</html>

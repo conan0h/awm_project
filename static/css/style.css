@@ -1,0 +1,34 @@
+h1 {
+  font-family: "Times New Roman", Times, serif;
+  color: green;
+}
+
+#container {
+    padding-top: 15%;
+    margin: auto;
+    width: 50%;
+    text-align: center;
+}
+
+.article-list {
+    list-style: none;
+    padding: 0;
+}
+
+.article-list-item {
+    border: 1px solid #ccc;
+    padding: 10px;
+    margin: 10px 0;
+    border-radius: 5px;
+}
+
+.article-list-item a {
+    text-decoration: none;
+}
+
+.article-list-item img {
+    width: 5%;
+    height: auto;
+    margin-right: 10px;
+    border-radius: 5px;
+}
